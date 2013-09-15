@@ -7,22 +7,28 @@ var express = require('express'),
 exports.routes = function() {
     app = express();
     app.get("/:layer/*", function appGet (req, res) {
-        var layerConfig,
+        var layerConfig = config.layers[req.param("layer")],
             cacheInfo;
-        layerConfig = config.layers[req.param("layer")];
+
+        // Make sure the specified type is available
         if (layerConfig && types[layerConfig.type]) {
-            cacheInfo = types[layerConfig.type].process(req, layerConfig);
+            cacheInfo = types[layerConfig.type].process(req, res, layerConfig);
         }
+
         if (cacheInfo) {
-            getCache(cacheInfo, layerConfig, res);
+
+            // get the cache info if we can
+            getCache(cacheInfo);
         } else {
+
+            // If we can't get it, return an error
             res.status(404).send("Not Found");
         }
     });
     return app;
 };
 
-var getCache = function getCache(cacheInfo, layerConfig, res) {
+var getCache = function getCache(cacheInfo) {
 
     var createDirectories = function createDirectories(tilePath, cachePath, callback) {
         var testPaths = tilePath.split('/').concat(cachePath.split('/'));
@@ -68,7 +74,7 @@ var getCache = function getCache(cacheInfo, layerConfig, res) {
     var displayImage = function(filename) {
 
         // Write out the headers
-        res.writeHead(200, {'Content-Type': 'image/jpeg'});
+        //cacheInfo.res.writeHead(200, {'Content-Type': 'image/jpeg'});
 
         // Check if the file exists
         fs.stat(filename, function(statErr) {
@@ -77,10 +83,10 @@ var getCache = function getCache(cacheInfo, layerConfig, res) {
                 // if so, open it and send it to the user
                 var readStream = fs.createReadStream(filename);
                 readStream.on('open', function() {
-                    readStream.pipe(res);
+                    readStream.pipe(cacheInfo.stream);
                 });
                 readStream.on('error', function(readErr) {
-                    res.end(err);
+                    cacheInfo.res.end(err);
                 });
             } else {
 
@@ -96,7 +102,11 @@ var getCache = function getCache(cacheInfo, layerConfig, res) {
                 saveImage.pipe(writeStream);
 
                 // Stream to the browser
-                saveImage.pipe(res);
+                saveImage.pipe(cacheInfo.stream);
+
+                cacheInfo.stream.on('error', function(readErr) {
+                    cacheInfo.res.end(err);
+                });
             }
         });
     };
