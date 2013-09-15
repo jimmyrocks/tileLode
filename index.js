@@ -1,5 +1,6 @@
 var express = require('express'),
     fs = require('fs'),
+    request = require('request'),
     config = require('./config'),
     types = require('./types');
 
@@ -13,7 +14,7 @@ exports.routes = function() {
             cacheInfo = types[layerConfig.type].process(req, layerConfig);
         }
         if (cacheInfo) {
-            res.send(getCache(cacheInfo, layerConfig));
+            getCache(cacheInfo, layerConfig, res);
         } else {
             res.status(404).send("Not Found");
         }
@@ -21,30 +22,28 @@ exports.routes = function() {
     return app;
 };
 
-var getCache = function getCache(cacheInfo, layerConfig) {
+var getCache = function getCache(cacheInfo, layerConfig, res) {
 
     var createDirectories = function createDirectories(tilePath, cachePath, callback) {
         var testPaths = tilePath.split('/').concat(cachePath.split('/'));
         var checkDirectory = function checkDirectory(testPaths, innerCallback, index) {
             var testPath;
             index = index || 0;
-            if (index > testPaths.length - 1) {
-                console.log("done");
-                innerCallback();
+
+            // Set this directory if the user adds './' as the root
+            if (testPaths[0] === ".") {
+                testPath = __dirname;
             } else {
+                testPath = testPaths[0];
+            }
+            if (index > 0) {
+                testPath = [testPath, testPaths.slice(1,index).join("/")].join("/");
+            }
 
-                // Set this directory if the user adds './' as the root
-                if (testPaths[0] === ".") {
-                    testPath = __dirname;
-                } else {
-                    testPath = testPaths[0];
-                }
-
-                // start the recursive loop
-                if (index > 0) {
-                    testPath = [testPath, testPaths.slice(1,index).join("/")].join("/");
-                }
-                console.log(testPath);
+            if (index > testPaths.length - 1) {
+                console.log("done loop");
+                innerCallback(testPath);
+            } else {
                 fs.exists(testPath, function(exists) {
                     if (exists) {
                         checkDirectory(testPaths, innerCallback, index + 1);
@@ -60,14 +59,51 @@ var getCache = function getCache(cacheInfo, layerConfig) {
                 });
             }
         };
-        checkDirectory(testPaths, callback);
+        checkDirectory(testPaths, function(filename){
+            console.log("fn: " + filename);
+            callback(filename);
+        });
     };
 
-    createDirectories(config.tilePath, cacheInfo.cachePath, function(){});
+    var displayImage = function(filename) {
 
-    var testPath = config.tilePath;
+        // Write out the headers
+        res.writeHead(200, {'Content-Type': 'image/jpeg'});
 
-    return (toHtml(cacheInfo));
+        // Check if the file exists
+        fs.stat(filename, function(statErr) {
+            if (!statErr) {
+
+                // if so, open it and send it to the user
+                var readStream = fs.createReadStream(filename);
+                readStream.on('open', function() {
+                    readStream.pipe(res);
+                });
+                readStream.on('error', function(readErr) {
+                    res.end(err);
+                });
+            } else {
+
+                // Otherwise, download it and stream it to the user
+                var writeStream = fs.createWriteStream(filename);
+                writeStream.on('error', function(writeError) {
+                    console.log("write error: " + writeErr);
+                });
+                console.log("opening write stream!");
+                var saveImage = request(cacheInfo.url);
+
+                // Stream to file
+                saveImage.pipe(writeStream);
+
+                // Stream to the browser
+                saveImage.pipe(res);
+            }
+        });
+    };
+
+    createDirectories(config.tilePath, cacheInfo.cachePath, function(img){
+        displayImage(img);
+    });
 };
 
 // This is just for debugging really
