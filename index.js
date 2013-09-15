@@ -17,13 +17,12 @@ exports.routes = function() {
         } else {
             res.status(404).send("Not Found");
         }
-
     });
     return app;
 };
 
 var getCache = function getCache(cacheInfo, layerConfig) {
-    
+
     var createDirectories = function createDirectories(tilePath, cachePath, callback) {
         var testPaths = tilePath.split('/').concat(cachePath.split('/'));
         var checkDirectory = function checkDirectory(testPaths, innerCallback, index) {
@@ -33,7 +32,15 @@ var getCache = function getCache(cacheInfo, layerConfig) {
                 console.log("done");
                 innerCallback();
             } else {
-                testPath = testPaths[0];
+
+                // Set this directory if the user adds './' as the root
+                if (testPaths[0] === ".") {
+                    testPath = __dirname;
+                } else {
+                    testPath = testPaths[0];
+                }
+
+                // start the recursive loop
                 if (index > 0) {
                     testPath = [testPath, testPaths.slice(1,index).join("/")].join("/");
                 }
@@ -42,12 +49,15 @@ var getCache = function getCache(cacheInfo, layerConfig) {
                     if (exists) {
                         checkDirectory(testPaths, innerCallback, index + 1);
                     } else {
-                        fs.mkdir(testPath, function() {
-                            checkDirectory(testPaths, innerCallback, index + 1);
+                        fs.mkdir(testPath, 0777, function(err) {
+                            if (!err) {
+                                checkDirectory(testPaths, innerCallback, index + 1);
+                            } else {
+                                throw ("Error creating directory: " + err);
+                            }
                         });
                     }
                 });
-                //checkDirectory(testPaths, innerCallback, index + 1);
             }
         };
         checkDirectory(testPaths, callback);
