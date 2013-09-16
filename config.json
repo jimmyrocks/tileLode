@@ -3,11 +3,21 @@
     "layers": {
         "tnm" : {
             "displayName": "The National Map",
-            "type": "esriTiledGM",
-            "maxZoom": "16",
+            "type": "esriTiled",
+            "maxZoom": "15",
             "minZoom": "0",
             "url": "http://basemap.nationalmap.gov/ArcGIS/rest/services/USGSTopo/MapServer/tile/%z/%y/%x",
-            "imageFormat": "png"
+            "imageFormat": "jpg",
+            "cacheTiles": true
+        },
+        "tnmWMS" : {
+            "displayName": "The National Map",
+            "type": "wms",
+            "maxZoom": "20",
+            "minZoom": "16",
+            "url": "http://services.nationalmap.gov/ArcGIS/rest/services/USGSTopoLarge/MapServer/export?",
+            "imageFormat": "png",
+            "cacheTiles": false
         }
     }
 }
