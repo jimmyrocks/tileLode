@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+        <title>Leaflet Example</title>
+        <meta charset="utf-8" />
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.css" />
+        <!--[if lte IE 8]><link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.css" /><![endif]-->
+</head>
+<body>
+        <div id="map" style="width: 600px; height: 400px"></div>
+
+        <script src="http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.js"></script>
+        <script>
+
+                var map = L.map('map').setView([39.75, -105.0], 12);
+
+                var wms = L.tileLayer('http://192.168.33.3:3033/tileLode/tnmWMS/{z}/{x}/{y}', {
+                        maxZoom: 18,
+                        attribution: 'USGS'
+                });
+                var tnm = L.tileLayer('http://192.168.33.3:3033/tileLode/tnm/{z}/{x}/{y}', {
+                        maxZoom: 18,
+                        attribution: 'USGS'
+                });
+                var osm = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom:20,
+                    attribution: 'OSM'
+                });
+
+                L.control.layers({"wms" : wms, "tnm": tnm, "osm": osm}).addTo(map);
+
+
+        </script>
+</body>
+</html>
+
