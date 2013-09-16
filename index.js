@@ -2,7 +2,9 @@ var express = require('express'),
     fs = require('fs'),
     request = require('request'),
     config = require('./config'),
-    types = require('./types');
+    types = require('./types'),
+    imageTypes = require('./tools/imageTypes'),
+    sendError = require('./tools/sendError');
 
 exports.routes = function() {
     app = express();
@@ -30,7 +32,7 @@ exports.routes = function() {
         } else {
 
             // If we can't get it, return an error
-            sendError(404,res);
+            sendError.sendError(500, res, tileObject.errorDescription);
         }
     });
     return app;
@@ -92,7 +94,7 @@ var getCache = function getCache(cacheInfo) {
     var displayImage = function(filename) {
 
         // Write out the headers
-        cacheInfo.res.writeHead(200, {'Content-Type': getContentType("png")});
+        cacheInfo.res.writeHead(200, {'Content-Type': imageTypes[cacheInfo.imageFormat]});
 
         // Check if the file exists
         fs.stat(filename, function(statErr) {
@@ -135,14 +137,14 @@ var getCache = function getCache(cacheInfo) {
             displayImage(img);
         });
     } else {
-        if (cacheInfo.tileUrl) {
+        if (cacheInfo.tileUrl && !cacheInfo.errorDescription) {
             // do a 301 forward
             console.log(cacheInfo.tileUrl);
             cacheInfo.res.redirect(307, cacheInfo.tileUrl); //config.tileUrl);
         } else {
             //Tile Error
             /// PREDEFINED TILE ERROR PATH
-            sendError(404,cacheInfo.res, cacheInfo.errorDescription);
+            sendError.sendError(cacheInfo.errorNum || 404, cacheInfo.res, cacheInfo.errorDescription);
         }
     }
 };
@@ -156,18 +158,4 @@ var toHtml = function toHtml(inVal) {
     return inReq.join("<br/>");
 };
 
-// This should be a separate file?
-var getContentType = function getContentType(ext) {
-    var types = {
-        "gif": "image/gif",
-        "jpg": "image/jpeg",
-        "jpeg": "image/jpeg",
-        "png": "image/png",
-        "tiff": "image/tiff"
-    };
-    return types[ext];
-};
-var sendError = function(errorType, res, description) {
-    description = description ? "<br/>" + description : "";
-    res.status(errorType).send("Not Found" + description);
-};
+

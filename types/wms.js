@@ -1,3 +1,5 @@
+var tileMath = require('../tools/tileMath');
+
 exports.process = function process (req, res, config) {
     var z,
         x,
@@ -13,7 +15,7 @@ exports.process = function process (req, res, config) {
             "imageFormat": config.imageFormat
         };
 
-    if (urlParams.length > 3) {
+    if (urlParams.length > 4) {
         // We have enough params
         z = parseInt(urlParams[2],10);
         x = parseInt(urlParams[3],10);
@@ -31,12 +33,11 @@ exports.process = function process (req, res, config) {
             "imageSR": "102113"
         };
 
-        
         var bounds = {
-            'left': tile2long(x,z),
-            'top': tile2lat(y,z),
-            'right': tile2long((x+1), z),
-            'bottom': tile2lat((y+1),z)
+            'left': tileMath.tile2long(x,z),
+            'top': tileMath.tile2lat(y,z),
+            'right': tileMath.tile2long((x+1), z),
+            'bottom': tileMath.tile2lat((y+1),z)
         };
 
         wmsSettings.bbox = [bounds.left, bounds.top, bounds.right, bounds.bottom].join(",");
@@ -61,9 +62,7 @@ exports.process = function process (req, res, config) {
         tileObject.cachePath = urlParams.splice(1,5).join("/");
 
         // If we're not in the right zoom, return false for the tileUrl
-        console.log("zoom, min, max: ", z, config.minZoom, config.maxZoom);
         if (z >= parseInt(config.minZoom,10) && z <= parseInt(config.maxZoom, 10)) {
-        console.log("%zoom, min, max: ", z, config.minZoom, config.maxZoom);
             tileObject.cacheTile = config.cacheTiles;
             tileObject.returnTile = true;
         } else {
@@ -76,19 +75,11 @@ exports.process = function process (req, res, config) {
                 config.maxZoom,
                 ")."
             ].join('');
+            tileObject.errorNum = 400;
         }
     } else {
         tileObject.errorDescription = "Too few parameters, this requires parameters in z/x/y format";
+        tileObject.errorNum = 400;
     }
     return tileObject;
 };
-
-// Figure out the coords
-        function tile2long(xt,zt) {
-            return (xt/Math.pow(2,zt)*360-180);
-        }
-        function tile2lat(yy,zy) {
-            var n=Math.PI-2*Math.PI*yy/Math.pow(2,zy);
-            return (180/Math.PI*Math.atan(0.5*(Math.exp(n)-Math.exp(-n))));
-        }
-

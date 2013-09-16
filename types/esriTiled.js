@@ -1,3 +1,5 @@
+
+
 exports.process = function process (req, res, config) {
     var z,
         x,
@@ -13,7 +15,7 @@ exports.process = function process (req, res, config) {
             "imageFormat": config.imageFormat
         };
 
-    if (urlParams.length > 3) {
+    if (urlParams.length > 4) {
         // We have enough params
         z = urlParams[2];
         x = urlParams[3];
@@ -25,9 +27,7 @@ exports.process = function process (req, res, config) {
         tileObject.cachePath = urlParams.splice(1,5).join("/");
 
         // If we're not in the right zoom, return false for the tileUrl
-        console.log("zoom, min, max: ", z, config.minZoom, config.maxZoom);
         if (z >= parseInt(config.minZoom,10) && z <= parseInt(config.maxZoom, 10)) {
-        console.log("$zoom, min, max: ", z, config.minZoom, config.maxZoom);
             tileObject.cacheTile = config.cacheTiles;
             tileObject.returnTile = true;
         } else {
@@ -42,7 +42,7 @@ exports.process = function process (req, res, config) {
             ].join('');
         }
     } else {
-        tileObject.errorDescription = "Too few parameters, this requires parameters in z/y/x format";
+        tileObject.errorDescription = "Too few parameters, this requires parameters in z/x/y format";
     }
     return tileObject;
 };
