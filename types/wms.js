@@ -23,7 +23,7 @@ exports.process = function process (req, res, config) {
         var wmsSettings = {
             "dpi": "92",
             "transparent":  true,
-            "layers": "show:2,3,4,5,6,8,9,10,12,13,14,15,16,17,18,20,21,22,23,24,25,26,28,29,30,31,32,33,35,36,38,39,40,42,43,48",
+            "layers": "show:0",
             "size": "256,256",
             "f": "image",
             "format": config.imageFormat,
@@ -31,15 +31,7 @@ exports.process = function process (req, res, config) {
             "imageSR": "102113"
         };
 
-        // Figure out the coords
-        function tile2long(xt,zt) {
-            return (xt/Math.pow(2,zt)*360-180);
-        }
-        function tile2lat(yy,zy) {
-            var n=Math.PI-2*Math.PI*yy/Math.pow(2,zy);
-            return (180/Math.PI*Math.atan(0.5*(Math.exp(n)-Math.exp(-n))));
-        }
-
+        
         var bounds = {
             'left': tile2long(x,z),
             'top': tile2lat(y,z),
@@ -50,6 +42,13 @@ exports.process = function process (req, res, config) {
         wmsSettings.bbox = [bounds.left, bounds.top, bounds.right, bounds.bottom].join(",");
 
         // Add in params from the config (not ready yet!)
+        if (config.wms) {
+            for (var setting in config.wms) {
+                if (config.wms.hasOwnProperty(setting)){
+                    wmsSettings[setting] = config.wms[setting];
+                }
+            }
+        }
         tileObject.tileUrl = config.url;
         for (var key in wmsSettings) {
             if (wmsSettings.hasOwnProperty(key)){
@@ -84,4 +83,12 @@ exports.process = function process (req, res, config) {
     return tileObject;
 };
 
+// Figure out the coords
+        function tile2long(xt,zt) {
+            return (xt/Math.pow(2,zt)*360-180);
+        }
+        function tile2lat(yy,zy) {
+            var n=Math.PI-2*Math.PI*yy/Math.pow(2,zy);
+            return (180/Math.PI*Math.atan(0.5*(Math.exp(n)-Math.exp(-n))));
+        }
 

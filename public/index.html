@@ -21,6 +21,10 @@
                         maxZoom: 18,
                         attribution: 'USGS'
                 });
+                var geomac = L.tileLayer('http://192.168.33.3:3033/tileLode/geomacFire/{z}/{x}/{y}', {
+                        maxZoom: 18,
+                        attribution: 'Geomac'
+                });
                 var tnm = L.tileLayer('http://192.168.33.3:3033/tileLode/tnm/{z}/{x}/{y}', {
                         maxZoom: 18,
                         attribution: 'USGS'
@@ -28,9 +32,9 @@
                 var osm = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     maxZoom:20,
                     attribution: 'OSM'
-                });
+                }).addTo(map);
 
-                L.control.layers({"wms" : wms, "tnm": tnm, "osm": osm}).addTo(map);
+                L.control.layers({"wms" : wms, "tnm": tnm, "osm": osm, "geomac": geomac}).addTo(map);
 
 
         </script>
