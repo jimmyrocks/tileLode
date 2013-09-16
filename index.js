@@ -6,6 +6,14 @@ var express = require('express'),
 
 exports.routes = function() {
     app = express();
+
+    // leaflet test display
+    app.get("/", function(req, res) {
+        res.sendfile(__dirname + '/public/index.html');
+    });
+
+
+    //
     app.get("/:layer/*", function appGet (req, res) {
         var layerConfig = config.layers[req.param("layer")],
             cacheInfo;
@@ -22,7 +30,7 @@ exports.routes = function() {
         } else {
 
             // If we can't get it, return an error
-            res.status(404).send("Not Found");
+            sendError(404,res);
         }
     });
     return app;
@@ -51,14 +59,24 @@ var getCache = function getCache(cacheInfo) {
                 innerCallback(testPath);
             } else {
                 fs.exists(testPath, function(exists) {
-                    if (exists) {
+                    var next = function next(){
                         checkDirectory(testPaths, innerCallback, index + 1);
+                    };
+                    console.log("testing path: " + testPath);
+                    if (exists) {
+                        next();
                     } else {
                         fs.mkdir(testPath, 0777, function(err) {
                             if (!err) {
-                                checkDirectory(testPaths, innerCallback, index + 1);
+                                next();
                             } else {
-                                throw ("Error creating directory: " + err);
+                                console.log("Error creating directory: " + err);
+                                console.log(err);
+                                if (err.errno === 47) {
+                                    next();
+                                } else {
+                                    throw (err);
+                                }
                             }
                         });
                     }
@@ -74,7 +92,7 @@ var getCache = function getCache(cacheInfo) {
     var displayImage = function(filename) {
 
         // Write out the headers
-        //cacheInfo.res.writeHead(200, {'Content-Type': 'image/jpeg'});
+        cacheInfo.res.writeHead(200, {'Content-Type': getContentType("png")});
 
         // Check if the file exists
         fs.stat(filename, function(statErr) {
@@ -86,7 +104,8 @@ var getCache = function getCache(cacheInfo) {
                     readStream.pipe(cacheInfo.stream);
                 });
                 readStream.on('error', function(readErr) {
-                    cacheInfo.res.end(err);
+                    console.log(readErr);
+                    //cacheInfo.res.end(readErr);
                 });
             } else {
 
@@ -96,7 +115,7 @@ var getCache = function getCache(cacheInfo) {
                     console.log("write error: " + writeErr);
                 });
                 console.log("opening write stream!");
-                var saveImage = request(cacheInfo.url);
+                var saveImage = request(cacheInfo.tileUrl);
 
                 // Stream to file
                 saveImage.pipe(writeStream);
@@ -111,9 +130,21 @@ var getCache = function getCache(cacheInfo) {
         });
     };
 
-    createDirectories(config.tilePath, cacheInfo.cachePath, function(img){
-        displayImage(img);
-    });
+    if (cacheInfo.cacheTile) {
+        createDirectories(config.tilePath, cacheInfo.cachePath, function(img){
+            displayImage(img);
+        });
+    } else {
+        if (cacheInfo.tileUrl) {
+            // do a 301 forward
+            console.log(cacheInfo.tileUrl);
+            cacheInfo.res.redirect(307, cacheInfo.tileUrl); //config.tileUrl);
+        } else {
+            //Tile Error
+            /// PREDEFINED TILE ERROR PATH
+            sendError(404,cacheInfo.res, cacheInfo.errorDescription);
+        }
+    }
 };
 
 // This is just for debugging really
@@ -123,4 +154,20 @@ var toHtml = function toHtml(inVal) {
         inReq.push(["<b>", val, "</b>", ": ", inVal[val]].join('')); 
     }
     return inReq.join("<br/>");
+};
+
+// This should be a separate file?
+var getContentType = function getContentType(ext) {
+    var types = {
+        "gif": "image/gif",
+        "jpg": "image/jpeg",
+        "jpeg": "image/jpeg",
+        "png": "image/png",
+        "tiff": "image/tiff"
+    };
+    return types[ext];
+};
+var sendError = function(errorType, res, description) {
+    description = description ? "<br/>" + description : "";
+    res.status(errorType).send("Not Found" + description);
 };
