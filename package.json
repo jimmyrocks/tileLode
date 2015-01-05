@@ -1,0 +1,23 @@
+{
+  "name": "tileLode",
+  "version": "0.0.2",
+  "description": "tileCaching for Express.js",
+  "keywords": ["postgres"],
+  "author": "Jim McAndrew <jim@loc8.us>",
+  "license": "Public Domain",
+  "contributors": [{
+    "name": "Jim McAndrew",
+    "email": "jim@loc8.us"
+  }],
+  "scripts": {
+    "start": "node index"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/jimmyrocks/tileLode"
+  },
+  "dependencies": {
+    "express": "4.x",
+    "datagres": "git+https://github.com/jimmyrocks/datagres#master"
+  }
+}
