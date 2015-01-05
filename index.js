@@ -2,22 +2,22 @@ var express = require('express'),
     fs = require('fs'),
     request = require('request'),
     config = require('./config'),
-    types = require('./types'),
-    imageTypes = require('./tools/imageTypes'),
-    sendError = require('./tools/sendError');
+    types = require('./src/types'),
+    imageTypes = require('./src/tools/imageTypes'),
+    sendError = require('./src/tools/sendError');
 
 exports.routes = function() {
-    app = express();
+    var app = express();
 
     // leaflet test display
-    app.get("/", function(req, res) {
+    app.get('/', function(req, res) {
         res.sendfile(__dirname + '/public/index.html');
     });
 
 
     //
-    app.get("/:layer/*", function appGet (req, res) {
-        var layerConfig = config.layers[req.param("layer")],
+    app.get('/:layer/*', function appGet (req, res) {
+        var layerConfig = config.layers[req.param('layer')],
             cacheInfo;
 
         // Make sure the specified type is available
@@ -47,24 +47,24 @@ var getCache = function getCache(cacheInfo) {
             index = index || 0;
 
             // Set this directory if the user adds './' as the root
-            if (testPaths[0] === ".") {
+            if (testPaths[0] === '.') {
                 testPath = __dirname;
             } else {
                 testPath = testPaths[0];
             }
             if (index > 0) {
-                testPath = [testPath, testPaths.slice(1,index).join("/")].join("/");
+                testPath = [testPath, testPaths.slice(1,index).join('/')].join('/');
             }
 
             if (index > testPaths.length - 1) {
-                console.log("done loop");
+                console.log('done loop');
                 innerCallback(testPath);
             } else {
                 fs.exists(testPath, function(exists) {
                     var next = function next(){
                         checkDirectory(testPaths, innerCallback, index + 1);
                     };
-                    console.log("testing path: " + testPath);
+                    console.log('testing path: ' + testPath);
                     if (exists) {
                         next();
                     } else {
@@ -72,7 +72,7 @@ var getCache = function getCache(cacheInfo) {
                             if (!err) {
                                 next();
                             } else {
-                                console.log("Error creating directory: " + err);
+                                console.log('Error creating directory: ' + err);
                                 console.log(err);
                                 if (err.errno === 47) {
                                     next();
@@ -86,7 +86,7 @@ var getCache = function getCache(cacheInfo) {
             }
         };
         checkDirectory(testPaths, function(filename){
-            console.log("fn: " + filename);
+            console.log('fn: ' + filename);
             callback(filename);
         });
     };
@@ -114,9 +114,9 @@ var getCache = function getCache(cacheInfo) {
                 // Otherwise, download it and stream it to the user
                 var writeStream = fs.createWriteStream(filename);
                 writeStream.on('error', function(writeError) {
-                    console.log("write error: " + writeErr);
+                    console.log('write error: ' + writeErr);
                 });
-                console.log("opening write stream!");
+                console.log('opening write stream!');
                 var saveImage = request(cacheInfo.tileUrl);
 
                 // Stream to file
@@ -149,13 +149,13 @@ var getCache = function getCache(cacheInfo) {
     }
 };
 
-// This is just for debugging really
-var toHtml = function toHtml(inVal) {
-    var inReq = [];
-    for (var val in inVal) {
-        inReq.push(["<b>", val, "</b>", ": ", inVal[val]].join('')); 
-    }
-    return inReq.join("<br/>");
-};
+// This is just for debugging
+// var toHtml = function toHtml(inVal) {
+//     var inReq = [];
+//     for (var val in inVal) {
+//         inReq.push(['<b>', val, '</b>', ': ', inVal[val]].join('')); 
+//     }
+//     return inReq.join('<br/>');
+// };
 
 
