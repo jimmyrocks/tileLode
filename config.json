@@ -1,39 +1,61 @@
 {
-    "tilePath": "./tiles",
-    "layers": {
-        "tnm" : {
-            "displayName": "The National Map",
-            "type": "esriTiled",
-            "maxZoom": "15",
-            "minZoom": "0",
-            "url": "http://basemap.nationalmap.gov/ArcGIS/rest/services/USGSTopo/MapServer/tile/%z/%y/%x",
-            "imageFormat": "jpg",
-            "cacheTiles": true
-        },
-        "tnmWMS" : {
-            "displayName": "The National Map",
-            "type": "wms",
-            "maxZoom": "20",
-            "minZoom": "16",
-            "url": "http://services.nationalmap.gov/ArcGIS/rest/services/USGSTopoLarge/MapServer/export?",
-            "imageFormat": "png",
-            "cacheTiles": false,
-            "wms": {
-                "layers": "show:2,3,4,5,6,8,9,10,12,13,14,15,16,17,18,20,21,22,23,24,25,26,28,29,30,31,32,33,35,36,38,39,40,42,43,48"
-            }
-        },
-        "geomacFire": {
-            "displayName": "Geomac Fire",
-            "type": "wms",
-            "maxZoom": "20",
-            "minZoom": "4",
-            "url": "http://wildfire.cr.usgs.gov/ArcGIS/rest/services/geomac_dyn/MapServer/export?",
-            "imageFormat": "png",
-            "cacheTiles": false,
-            "wms": {
-                "layers": "show:0,1"
-            }
- 
-        }
+  "tilePath": "./tiles",
+  "layers": {
+    "historicalTopo": {
+      "displayName": "Historical Topographic Maps",
+      "database": {
+        "username": "postgres",
+        "password": "postgres",
+        "address": "localhost",
+        "dbname": "topo"
+      },
+      "rasterColumn": "rast",
+      "tables": [
+        "nj_high bridge_255221_1890_62500_geo",
+        "nj_lambertville_255237_1890_62500_geo",
+        "nj_princeton_255342_1894_62500_geo",
+        "nj_somerville_255380_1891_62500_geo"
+      ],
+      "type": "postgisRaster",
+      "maxZoom": 15,
+      "minZoom": 13,
+      "imageFormat": "jpg",
+      "imgQuality": 90,
+      "cacheTiles": false
+    },
+    "tnm": {
+      "displayName": "The National Map",
+      "type": "esriTiled",
+      "maxZoom": "15",
+      "minZoom": "0",
+      "url": "http://basemap.nationalmap.gov/ArcGIS/rest/services/USGSTopo/MapServer/tile/%z/%y/%x",
+      "imageFormat": "jpg",
+      "cacheTiles": true
+    },
+    "tnmWMS": {
+      "displayName": "The National Map",
+      "type": "wms",
+      "maxZoom": "20",
+      "minZoom": "16",
+      "url": "http://services.nationalmap.gov/ArcGIS/rest/services/USGSTopoLarge/MapServer/export?",
+      "imageFormat": "png",
+      "cacheTiles": false,
+      "wms": {
+        "layers": "show:2,3,4,5,6,8,9,10,12,13,14,15,16,17,18,20,21,22,23,24,25,26,28,29,30,31,32,33,35,36,38,39,40,42,43,48"
+      }
+    },
+    "geomacFire": {
+      "displayName": "Geomac Fire",
+      "type": "wms",
+      "maxZoom": "20",
+      "minZoom": "4",
+      "url": "http://wildfire.cr.usgs.gov/ArcGIS/rest/services/geomac_dyn/MapServer/export?",
+      "imageFormat": "png",
+      "cacheTiles": false,
+      "wms": {
+        "layers": "show:0,1"
+      }
+
     }
+  }
 }
