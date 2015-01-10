@@ -18,6 +18,6 @@
   },
   "dependencies": {
     "express": "4.x",
-    "datagres": "git+https://github.com/jimmyrocks/datagres#master"
+    "datawrap": "git+https://github.com/jimmyrocks/datawrap#master"
   }
 }
