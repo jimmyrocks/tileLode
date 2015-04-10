@@ -2,7 +2,7 @@ var express = require('express');
 var tileLode = require('./index');
 
 var app = express();
-app.set('port', process.env.PORT || 3000);
+app.set('port', process.env.PORT || 3003);
 app.use('/example', express.static(__dirname + '/example'));
 app.use('/tileLode', tileLode.createApp());
 

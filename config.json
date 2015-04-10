@@ -24,6 +24,15 @@
       "imgQuality": 90,
       "cacheTiles": false
     },
+    "esriOverlay": {
+      "displayName": "Esri Overlay Map",
+      "type": "esriTiled",
+      "maxZoom": "15",
+      "minZoom": "0",
+      "url": "http://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/%z/%y/%x",
+      "imageFormat": "png",
+      "cacheTiles": false
+    },
     "tnm": {
       "displayName": "The National Map",
       "type": "esriTiled",
@@ -43,6 +52,18 @@
       "cacheTiles": false,
       "wms": {
         "layers": "show:2,3,4,5,6,8,9,10,12,13,14,15,16,17,18,20,21,22,23,24,25,26,28,29,30,31,32,33,35,36,38,39,40,42,43,48"
+      }
+    },
+    "tnmOverlay": {
+      "displayName": "The National Map Overlay",
+      "type": "wms",
+      "maxZoom": "18",
+      "minZoom": "5",
+      "url": "http://services.nationalmap.gov/arcgis/rest/services/transportation/MapServer/export?",
+      "imageFormat": "png",
+      "cacheTiles": true,
+      "wms": {
+        "layers": "show:2,3,4,5,11,12,13,14,15,16,17"
       }
     },
     "geomacFire": {
