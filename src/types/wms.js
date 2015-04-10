@@ -1,6 +1,6 @@
 var tileMath = require('../tools/tileMath');
 
-exports.process = function process(req, res, config) {
+exports.process = function process(req, res, config, callback) {
   var z,
     x,
     y,
@@ -81,5 +81,5 @@ exports.process = function process(req, res, config) {
     tileObject.errorDescription = 'Too few parameters, this requires parameters in z/x/y format';
     tileObject.errorNum = 400;
   }
-  return tileObject;
+  callback(null, tileObject);
 };

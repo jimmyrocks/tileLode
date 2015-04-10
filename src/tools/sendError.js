@@ -1,8 +1,8 @@
 // Sends error to the browser
 // http://en.wikipedia.org/wiki/List_of_HTTP_status_codes
 
-var errorList = require ('./errorList');
-exports.sendError = function(errorType, res, description) {
+var errorList = require('./errorList');
+module.exports = function(errorType, res, description) {
   var returnLines = [];
   // Create a description page
   if (errorList[errorType]) {

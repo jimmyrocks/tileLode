@@ -27,5 +27,37 @@ var tileMath = module.exports = {
   },
   tile2long: function(x, z) {
     return (x / Math.pow(2, z) * 360 - 180);
+  },
+ //http://www.gal-systems.com/2011/07/convert-coordinates-between-web.html
+  toWgs84: function(mercatorLonX, mercatorLatY) {
+    if (Math.abs(mercatorLonX) < 180 && Math.abs(mercatorLatY) < 90)
+      return;
+
+    if ((Math.abs(mercatorLonX) > 20037508.3427892) || (Math.abs(mercatorLatY) > 20037508.3427892))
+      return;
+
+    var x = mercatorLonX,
+      y = mercatorLatY,
+      num3 = x / 6378137.0,
+      num4 = num3 * 57.295779513082323,
+      num5 = Math.floor((num4 + 180.0) / 360.0),
+      num6 = num4 - (num5 * 360.0),
+      num7 = 1.5707963267948966 - (2.0 * Math.atan(Math.exp((-1.0 * y) / 6378137.0)));
+    return {
+      'lat': num6,
+      'lon': num7 * 57.295779513082323
+    };
+  },
+  toWebMercator: function(mercatorLonX, mercatorLatY) {
+    if ((Math.abs(mercatorLonX) > 180 || Math.abs(mercatorLatY) > 90))
+      return;
+
+    var num = mercatorLonX * 0.017453292519943295,
+      x = 6378137.0 * num,
+      a = mercatorLatY * 0.017453292519943295;
+    return {
+      'lon': x,
+      'lat': 3189068.5 * Math.log((1.0 + Math.sin(a)) / (1.0 - Math.sin(a)))
+    };
   }
 };

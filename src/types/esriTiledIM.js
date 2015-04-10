@@ -1,6 +1,6 @@
 var spawn = require('child_process').spawn;
 
-exports.process = function process(req, res, config) {
+exports.process = function process(req, res, config, callback) {
   var z,
     x,
     y,
@@ -50,10 +50,10 @@ exports.process = function process(req, res, config) {
     return im.stdin;
   };
 
-  return {
+  callback(null, {
     'url': tileUrl,
     'cachePath': urlParams.slice(1, 5).join('/'),
     'res': res,
     'stream': imConvert(imArgs)
-  };
+  });
 };

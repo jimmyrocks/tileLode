@@ -6,6 +6,7 @@
       "database": {
         "username": "postgres",
         "password": "postgres",
+        "type": "postgresql",
         "address": "localhost",
         "dbname": "topo"
       },
@@ -28,7 +29,7 @@
       "type": "esriTiled",
       "maxZoom": "15",
       "minZoom": "0",
-      "url": "http://basemap.nationalmap.gov/ArcGIS/rest/services/USGSTopo/MapServer/tile/%z/%y/%x",
+      "url": "http://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryTopo/MapServer/tile/%z/%y/%x",
       "imageFormat": "jpg",
       "cacheTiles": true
     },
@@ -37,7 +38,7 @@
       "type": "wms",
       "maxZoom": "20",
       "minZoom": "16",
-      "url": "http://services.nationalmap.gov/ArcGIS/rest/services/USGSTopoLarge/MapServer/export?",
+      "url": "http://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryTopo/MapServer/export?",
       "imageFormat": "png",
       "cacheTiles": false,
       "wms": {

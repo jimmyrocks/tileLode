@@ -18,6 +18,9 @@
   },
   "dependencies": {
     "express": "4.x",
-    "datawrap": "git+https://github.com/jimmyrocks/datawrap#master"
+    "mkdirp": "0.5.0",
+    "pg": "*",
+    "pg-query-stream": "*",
+    "JSONStream": "*"
   }
 }

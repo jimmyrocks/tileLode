@@ -1,4 +1,4 @@
-exports.process = function process(req, res, config) {
+exports.process = function process(req, res, config, callback) {
   var z,
     x,
     y,
@@ -42,5 +42,5 @@ exports.process = function process(req, res, config) {
   } else {
     tileObject.errorDescription = 'Too few parameters, this requires parameters in z/x/y format';
   }
-  return tileObject;
+  callback(null, tileObject);
 };

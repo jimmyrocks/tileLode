@@ -17,21 +17,22 @@
 
   <script src="http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.js"></script>
   <script>
-    var map = L.map('map').setView([39.75, -105.0], 12);
+    var rootPath = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
+    var map = L.map('map').setView([40.413496049702,-74.6630859375], 13);
 
     var wms = L.tileLayer(
-      'http://192.168.33.3:3033/tileLode/tnmWMS/{z}/{x}/{y}',
+      rootPath + '/tileLode/tnmWMS/{z}/{x}/{y}',
       {
         maxZoom: 18,
         attribution: 'USGS'
       });
     var geomac = L.tileLayer(
-      'http://192.168.33.3:3033/tileLode/geomacFire/{z}/{x}/{y}',
+      rootPath + '/tileLode/geomacFire/{z}/{x}/{y}',
       {
         maxZoom: 18,
         attribution: 'Geomac'
       });
-    var tnm = L.tileLayer('http://192.168.33.3:3033/tileLode/tnm/{z}/{x}/{y}',
+    var tnm = L.tileLayer(rootPath + '/tileLode/tnm/{z}/{x}/{y}',
     {
       maxZoom: 18,
       attribution: 'USGS'
@@ -42,12 +43,20 @@
       attribution: 'OSM'
     }).addTo(map);
 
+    var postgis = L.tileLayer(rootPath + '/tileLode/historicalTopo/{z}/{x}/{y}',
+    {
+      maxZoom: 20,
+      minZoom:13,
+      attribution: 'USGS'
+    });
+
     L.control.layers(
     {
       "wms": wms,
       "tnm": tnm,
       "osm": osm,
-      "geomac": geomac
+      "geomac": geomac,
+      "postgis":postgis
     }).addTo(map);
   </script>
 </body>
