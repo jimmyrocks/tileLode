@@ -7,7 +7,8 @@ var types = {
   'jpeg': 'image/jpeg',
   'png': 'image/png',
   'svg': 'image/svg+xml',
-  'tiff': 'image/tiff'
+  'tiff': 'image/tiff',
+  'txt': 'text/plain'
 };
 
 for (var type in types) {
