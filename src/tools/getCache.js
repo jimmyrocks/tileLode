@@ -1,7 +1,7 @@
 var fs = require('fs');
 var config = require('../../config');
 var request = require('request');
-var imageTypes = require('./tools/imageTypes');
+var imageTypes = require('./imageTypes');
 
 module.exports = function(cacheInfo) {
   var createDirectories = function createDirectories(tilePath, cachePath, callback) {
